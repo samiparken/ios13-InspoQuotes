@@ -96,6 +96,10 @@ class QuoteTableViewController: UITableViewController, SKPaymentTransactionObser
             if transaction.transactionState == .purchased {
                 print("Transaction successful!")
                 showPremiumQuotes()
+                
+                // store in userDefault
+                UserDefaults.standard.set(true, forKey: productID)
+                
                 SKPaymentQueue.default().finishTransaction(transaction)
 
             } else if transaction.transactionState == .failed {
@@ -113,6 +117,18 @@ class QuoteTableViewController: UITableViewController, SKPaymentTransactionObser
     func showPremiumQuotes() {
         quotesToShow.append(contentsOf: premiumQuotes) // add sequence
         tableView.reloadData()
+    }
+    
+    func isPurchased() -> Bool {
+        let purchaseStatus = UserDefaults.standard.bool(forKey: productID)
+        
+        if purchaseStatus {
+            print("Previously purchased")
+            return true
+        } else {
+            print("Never purchased")
+            return false
+        }
     }
     
     
