@@ -37,11 +37,19 @@ class QuoteTableViewController: UITableViewController, SKPaymentTransactionObser
         // set PaymentTransactionObserver
         SKPaymentQueue.default().add(self)
                 
+        if isPurchased() {
+            showPremiumQuotes()
+        }
+                
     }
     
 // MARK: - Table view data source
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return quotesToShow.count + 1
+        if isPurchased() {
+            return quotesToShow.count
+        } else {
+            return quotesToShow.count + 1
+        }
     }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
