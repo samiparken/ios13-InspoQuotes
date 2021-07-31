@@ -7,8 +7,11 @@
 //
 
 import UIKit
+import StoreKit // for in-app purchase
 
-class QuoteTableViewController: UITableViewController {
+class QuoteTableViewController: UITableViewController, SKPaymentTransactionObserver {
+        
+    let productID = "com.samiparken.InspoQuotes.PremiumQuotes" //should be registered in Apple Developer
     
     var quotesToShow = [
         "Our greatest glory is not in never falling, but in rising every time we fall. — Confucius",
@@ -31,11 +34,9 @@ class QuoteTableViewController: UITableViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        // Uncomment the following line to preserve selection between presentations
-        // self.clearsSelectionOnViewWillAppear = false
-        
-        // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
-        // self.navigationItem.rightBarButtonItem = self.editButtonItem
+        // set PaymentTransactionObserver
+        SKPaymentQueue.default().add(self)
+                
     }
     
 // MARK: - Table view data source
@@ -63,19 +64,52 @@ class QuoteTableViewController: UITableViewController {
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
         if indexPath.row == quotesToShow.count {
-            // trigger in-app purchase
+            // trigger IN-APP PURCHASE
+            buyPremiumQuotes()
         }
         
         // auto-deselect animation
         tableView.deselectRow(at: indexPath, animated: true)
     }
     
-//MARK: - In-App Purchase Methods
+//MARK: - IN-APP PURCHASE Methods
     func buyPremiumQuotes() {
-     
+        if SKPaymentQueue.canMakePayments() {
+            // user can make payments
+            let paymentRequest = SKMutablePayment()
+            paymentRequest.productIdentifier = productID
+            SKPaymentQueue.default().add(paymentRequest)
+            
+        } else {
+            print("User can't make payments")
+        }
         
     }
     
+    // from SKPaymentTransactionObserver
+    func paymentQueue(_ queue: SKPaymentQueue, updatedTransactions transactions: [SKPaymentTransaction]) {
+        
+        for transaction in transactions {
+            
+            switch(transaction.transactionState) {
+            case .purchasing:
+                print("purchasing")
+                
+            case .purchased:
+                print("purchased")
+
+            case .failed:
+                print("failed")
+
+            default:
+                print("default")
+            }
+        }
+    }
+    
+
+    
+//MARK: - Buttons
     @IBAction func restorePressed(_ sender: UIBarButtonItem) {
         
     }
