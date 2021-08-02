@@ -83,6 +83,7 @@ class QuoteTableViewController: UITableViewController, SKPaymentTransactionObser
     }
     
 //MARK: - IN-APP PURCHASE Methods
+    
     func buyPremiumQuotes() {
         if SKPaymentQueue.canMakePayments() {
             // user can make payments
@@ -109,7 +110,7 @@ class QuoteTableViewController: UITableViewController, SKPaymentTransactionObser
                 UserDefaults.standard.set(true, forKey: productID)
                 
                 SKPaymentQueue.default().finishTransaction(transaction)
-
+                
             } else if transaction.transactionState == .failed {
                 
                 if let error = transaction.error {
@@ -118,6 +119,13 @@ class QuoteTableViewController: UITableViewController, SKPaymentTransactionObser
                 }
                 
                 SKPaymentQueue.default().finishTransaction(transaction)
+                
+            } else if transaction.transactionState == .restored {
+                // triggered with "Restore" button
+                showPremiumQuotes()
+                print("Transaction restored")
+                SKPaymentQueue.default().finishTransaction(transaction)
+                
             }
         }
     }
@@ -142,7 +150,7 @@ class QuoteTableViewController: UITableViewController, SKPaymentTransactionObser
     
 //MARK: - Buttons
     @IBAction func restorePressed(_ sender: UIBarButtonItem) {
-        
+        SKPaymentQueue.default().restoreCompletedTransactions() //try to restore payment transaction and do payment queue
     }
     
     
